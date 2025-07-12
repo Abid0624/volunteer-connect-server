@@ -33,6 +33,16 @@ async function run() {
       res.send(result);
     });
 
+    // get only 6 cards based on the upcoming deadline(asc order)
+    app.get("/asc-jobs", async (req, res) => {
+      const result = await jobsCollection
+        .find({})
+        .sort({ deadline: 1 })
+        .limit(6)
+        .toArray();
+      res.send(result);
+    });
+
     // save a job data in db
     app.post("/add-job", async (req, res) => {
       const postData = req.body;
