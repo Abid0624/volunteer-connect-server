@@ -26,6 +26,9 @@ async function run() {
     );
     // post related apis
     const jobsCollection = client.db("volunteerConnect").collection("jobs");
+    const applicantsCollection = client
+      .db("volunteerConnect")
+      .collection("applicants");
 
     // get all jobs
     app.get("/jobs", async (req, res) => {
@@ -84,6 +87,13 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const result = await jobsCollection.updateOne(query, updated, options);
+      res.send(result);
+    });
+
+    // save a applicant data in db
+    app.post("/add-application", async (req, res) => {
+      const postData = req.body;
+      const result = await applicantsCollection.insertOne(postData);
       res.send(result);
     });
   } finally {
