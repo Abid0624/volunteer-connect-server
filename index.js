@@ -92,8 +92,46 @@ async function run() {
 
     // save a applicant data in db
     app.post("/add-application", async (req, res) => {
+      // save data in applicant collection
       const postData = req.body;
+
+      // check a user is applied this post already
+      const query = {
+        volunteerEmail: postData.volunteerEmail,
+        postId: postData.postId,
+      };
+      const alreadyExist = await applicantsCollection.findOne(query);
+      if (alreadyExist)
+        return res.status(400).send("You have already applied for this post!");
+
       const result = await applicantsCollection.insertOne(postData);
+
+      // decrease no. of volunteer in job collection
+      const filter = { _id: new ObjectId(postData.postId) };
+      const update = {
+        $inc: { noOfVolunteer: -1 },
+      };
+      const updateNoOfVolunteerNeed = await jobsCollection.updateOne(
+        filter,
+        update
+      );
+
+      res.send(result);
+    });
+
+    // get all application for a specific user
+    app.get("/applications/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { volunteerEmail: email };
+      const result = await applicantsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // delete a job from application db
+    app.delete("/application/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await applicantsCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
