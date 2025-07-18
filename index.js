@@ -134,6 +134,19 @@ async function run() {
       const result = await applicantsCollection.deleteOne(query);
       res.send(result);
     });
+
+    // get all jobs
+    app.get("/all-jobs", async (req, res) => {
+      const search = req.query.search;
+      let query = {
+        title: {
+          $regex: search,
+          $options: "i",
+        },
+      };
+      const result = await jobsCollection.find(query).toArray();
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
