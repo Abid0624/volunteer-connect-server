@@ -9,7 +9,11 @@ require("dotenv").config();
 const port = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [
+    "http://localhost:5173",
+    "https://volunteer-connect-24d71.web.app",
+    "https://volunteer-connect-24d71.firebaseapp.com",
+  ],
   credentials: true,
   optionalSuccessStatus: 200,
 };
@@ -44,9 +48,9 @@ const verifyToken = (req, res, next) => {
 
 async function run() {
   try {
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
     // post related apis
     const jobsCollection = client.db("volunteerConnect").collection("jobs");
     const applicantsCollection = client
@@ -60,7 +64,7 @@ async function run() {
       const token = jwt.sign(email, process.env.SECRET_KEY, {
         expiresIn: "365d",
       });
-      console.log(token);
+
       res
         .cookie("token", token, {
           httpOnly: true,
