@@ -181,11 +181,7 @@ async function run() {
 
     // get all application for a specific user
     app.get("/applications/:email", async (req, res) => {
-      const decodedEmail = req.user.email;
       const email = req.params.email;
-
-      if (decodedEmail !== email)
-        return res.status(401).send({ message: "Unauthorized Access!" });
 
       const query = { volunteerEmail: email };
       const result = await applicantsCollection.find(query).toArray();
