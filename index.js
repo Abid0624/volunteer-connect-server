@@ -102,8 +102,6 @@ async function run() {
       const decodedEmail = req.user.email;
       const email = req.params.email;
 
-      console.log(decodedEmail, email);
-
       if (decodedEmail !== email)
         return res.status(401).send({ message: "Unauthorized Access!" });
 
@@ -129,14 +127,14 @@ async function run() {
     });
 
     // save a job data in db
-    app.post("/add-job", async (req, res) => {
+    app.post("/add-job", verifyToken, async (req, res) => {
       const postData = req.body;
       const result = await jobsCollection.insertOne(postData);
       res.send(result);
     });
 
     // update a job data in db
-    app.put("/update-job/:id", async (req, res) => {
+    app.put("/update-job/:id", verifyToken, async (req, res) => {
       const id = req.params.id;
       const postData = req.body;
       const updated = {
@@ -178,8 +176,13 @@ async function run() {
     });
 
     // get all application for a specific user
-    app.get("/applications/:email", async (req, res) => {
+    app.get("/applications/:email", verifyToken, async (req, res) => {
+      const decodedEmail = req.user.email;
       const email = req.params.email;
+
+      if (decodedEmail !== email)
+        return res.status(401).send({ message: "Unauthorized Access!" });
+
       const query = { volunteerEmail: email };
       const result = await applicantsCollection.find(query).toArray();
       res.send(result);
