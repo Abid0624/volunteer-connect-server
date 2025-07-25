@@ -180,7 +180,7 @@ async function run() {
     });
 
     // get all application for a specific user
-    app.get("/applications/:email", verifyToken, async (req, res) => {
+    app.get("/applications/:email", async (req, res) => {
       const decodedEmail = req.user.email;
       const email = req.params.email;
 
